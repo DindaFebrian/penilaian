@@ -37,124 +37,157 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ config('app.name','SekolahApp') }}</title>
-<script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name','Pantau Ceria') }}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
-<nav class="bg-white shadow sticky top-0 z-10">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-    {{-- Kiri: brand + menu sesuai role --}}
-    <div class="flex items-center gap-6">
 
-      <a href="{{ url('/') }}" class="font-semibold">SekolahApp</a>
+<div class="flex">
 
-      @php
-        // helper kelas aktif
-        $is = fn($pattern) => request()->routeIs($pattern)
-              ? 'text-indigo-600 font-semibold'
-              : 'text-gray-600 hover:text-gray-900';
-      @endphp
+    <aside class="w-64 bg-[#A4D6C4] min-h-screen p-6">
 
-      @auth
-        {{-- Semua role bisa melihat Dashboard --}}
-        @if (Route::has('dashboard'))
-          <a href="{{ route('dashboard') }}" class="{{ $is('dashboard') }}">Dashboard</a>
-        @endif
+        <h1 class="text-white font-semibold text-xl mb-10">
+            Pantau Ceria
+        </h1>
 
-        {{-- ========== MENU ROLE SEKOLAH ========== --}}
-        @hasrole('sekolah')
-          @if (Route::has('schools.my'))
-            <a href="{{ route('schools.my') }}" class="{{ $is('schools.my') }}">
-              Panel Sekolah
+        @php
+        $active = fn($r) => request()->routeIs($r)
+            ? 'bg-white text-black font-semibold'
+            : 'text-white hover:bg-white/20';
+        @endphp
+
+        <nav class="space-y-4">
+
+            <a href="{{ route('dashboard') }}"
+               class="flex items-center gap-3 p-3 rounded-lg {{ $active('dashboard') }}">
+                <span class="text-lg">📊</span> Dashboard
             </a>
-          @endif
 
-          @if (Route::has('schools.visits.index'))
-            <a href="{{ route('schools.visits.index') }}" class="{{ $is('schools.visits.*') }}">
-              Pengajuan Visitasi
-            </a>
-          @endif
+            @hasrole('sekolah')
 
-          @if (Route::has('schools.report.me'))
-            <a href="{{ route('schools.report.me') }}" class="{{ $is('schools.report.*') }}">
-              Hasil Penilaian
-            </a>
-          @endif
-        @endhasrole
-        
+                @if (Route::has('schools.my'))
+                <a href="{{ route('schools.my') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('schools.my') }}">
+                    <span class="text-lg">🏫</span> Panel Sekolah
+                </a>
+                @endif
 
-        {{-- ========== MENU ROLE PENGAWAS ========== --}}
-        @hasrole('pengawas')
-          @if (Route::has('pengawas.schools.index'))
-            <a href="{{ route('pengawas.schools.index') }}" class="{{ $is('pengawas.schools.*') }}">
-              Daftar Sekolah
-            </a>
-          @endif
+                @if (Route::has('schools.visits.index'))
+                <a href="{{ route('schools.visits.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('schools.visits.*') }}">
+                    <span class="text-lg">📋</span> Pengajuan Visitasi
+                </a>
+                @endif
 
-          @if (Route::has('pengawas.visits.index'))
-            <a href="{{ route('pengawas.visits.index') }}" class="{{ $is('pengawas.visits.*') }}">
-              Jadwal Visitasi
-            </a>
-          @endif
-        @endhasrole
+                @if (Route::has('schools.report.me'))
+                <a href="{{ route('schools.report.me') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('schools.report.*') }}">
+                    <span class="text-lg">📄</span> Hasil Penilaian
+                </a>
+                @endif
 
-        {{-- ========== MENU ROLE ADMIN ========== --}}
-        @hasrole('admin')
-          @if (Route::has('admin.users.index'))
-            <a href="{{ route('admin.users.index') }}" class="{{ $is('admin.users.*') }}">
-              Kelola Pengguna
-            </a>
-          @endif
+            @endhasrole
 
-          @if (Route::has('admin.visits.index'))
-            <a href="{{ route('admin.visits.index') }}" class="{{ $is('admin.visits.*') }}">
-              Manajemen Visitasi
-            </a>
-          @endif
-        @endhasrole
-      @endauth
+            @hasrole('pengawas')
+
+                @if (Route::has('pengawas.schools.index'))
+                <a href="{{ route('pengawas.schools.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('pengawas.schools.*') }}">
+                    <span class="text-lg">🏫</span> Data Sekolah
+                </a>
+                @endif
+
+                @if (Route::has('pengawas.visits.index'))
+                <a href="{{ route('pengawas.visits.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('pengawas.visits.*') }}">
+                    <span class="text-lg">📅</span> Jadwal Visitasi
+                </a>
+                @endif
+
+                @if (Route::has('pengawas.visits.completed'))
+                <a href="{{ route('pengawas.visits.completed') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('pengawas.visits.completed') }}">
+                    <span class="text-lg">📄</span> Hasil Visitasi
+                </a>
+                @endif
+
+            @endhasrole
+
+            @hasrole('admin')
+
+                @if (Route::has('admin.users.index'))
+                <a href="{{ route('admin.users.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('admin.users.*') }}">
+                    <span class="text-lg">👤</span> Kelola Pengguna
+                </a>
+                @endif
+
+                @if (Route::has('admin.visits.index'))
+                <a href="{{ route('admin.visits.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('admin.visits.*') }}">
+                    <span class="text-lg">📋</span> Manajemen Visitasi
+                </a>
+                @endif
+
+                @if (Route::has('pengawas.schools.index'))
+                <a href="{{ route('pengawas.schools.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('admin.schools.*') }}">
+                    <span class="text-lg">📋</span> Kelola Sekolah
+                </a>
+                @endif
+
+                @if (Route::has('admin.pengawas.index'))
+                <a href="{{ route('admin.pengawas.index') }}"
+                   class="flex items-center gap-3 p-3 rounded-lg {{ $active('admin.pengawas.*') }}">
+                    <span class="text-lg">📋</span> Kelola Pengawas
+                </a>
+                @endif
+
+            @endhasrole
+
+
+            {{-- Logout --}}
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button class="mt-6 text-red-600 font-semibold hover:underline">
+                    Log Out
+                </button>
+            </form>
+
+        </nav>
+    </aside>
+
+    <div class="flex-1">
+        <header class="bg-white shadow px-6 py-4 flex items-center justify-between">
+            <div class="flex-1">
+            </div>
+            <div class="flex items-center gap-4">
+
+                <div class="flex flex-col text-right">
+                    <span class="font-semibold text-sm">
+                        {{ auth()->user()->name }}
+                    </span>
+                    <span class="text-xs text-gray-500">
+                        {{ auth()->user()->getRoleNames()->implode(', ') }}
+                    </span>
+                </div>
+
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}"
+                        class="w-10 h-10 rounded-full">
+            </div>
+        </header>
+
+        <main class="p-6">
+            @yield('content')
+        </main>
+
     </div>
 
-    {{-- Kanan: info user + logout/login --}}
-    <div class="text-sm text-gray-600 flex items-center gap-3">
-      @auth
-        <span>Halo, <span class="font-medium">{{ auth()->user()->name }}</span></span>
-        <span class="px-2 py-1 rounded bg-gray-100 border text-xs">
-          {{ auth()->user()->getRoleNames()->implode(', ') ?: '-' }}
-        </span>
-        <form action="{{ route('logout') }}" method="POST" class="inline">
-          @csrf
-          <button type="submit" class="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">
-            Logout
-          </button>
-        </form>
-      @else
-        @if (Route::has('login'))
-          <a href="{{ route('login') }}" class="px-3 py-1 rounded bg-indigo-600 text-white">Login</a>
-        @endif
-      @endauth
-    </div>
-  </div>
-</nav>
+</div>
 
-
-
-<main class="max-w-7xl mx-auto p-4">
-  @if(session('success'))
-    <div class="mb-4 p-3 rounded bg-green-100 text-green-800">{{ session('success') }}</div>
-  @endif
-
-  @if($errors->any())
-    <div class="mb-4 p-3 rounded bg-red-100 text-red-800">
-      <ul class="list-disc list-inside">
-        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-      </ul>
-    </div>
-  @endif
-
-  @yield('content')
-</main>
 </body>
 </html>

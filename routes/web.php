@@ -14,7 +14,10 @@ use App\Http\Controllers\PengawasVisitController;
 use App\Http\Controllers\PengawasEvaluationController;
 use App\Http\Controllers\SchoolEvaluationReportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PengawasController;
+use App\Http\Controllers\AdminAccountController; // <--- ini yang baru
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', fn () => view('welcome'));
 
@@ -67,11 +70,6 @@ Route::middleware('auth')->group(function () {
     // ROLE: PENGAWAS
     // =========================
     Route::middleware('role:pengawas')->group(function () {
-        // Daftar sekolah untuk verifikasi
-        Route::get('/pengawas/sekolah',                 [SchoolController::class,'index'])->name('pengawas.schools.index');
-        Route::get('/pengawas/sekolah/{school}',        [SchoolController::class,'show'])->name('pengawas.schools.show');
-        Route::post('/pengawas/sekolah/{school}/approve',[VerificationController::class,'approve'])->name('pengawas.schools.approve');
-        Route::post('/pengawas/sekolah/{school}/reject',[VerificationController::class,'reject'])->name('pengawas.schools.reject');
 
         // Visitasi pengawas (jadwal, terima/tolak, selesai)
         Route::get('/pengawas/visitasi',                        [PengawasVisitController::class,'index'])->name('pengawas.visits.index');
@@ -79,7 +77,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pengawas/visitasi/{visit}/decline',       [PengawasVisitController::class,'decline'])->name('pengawas.visits.decline');
         Route::post('/pengawas/visitasi/{visit}/complete',      [PengawasVisitController::class,'complete'])->name('pengawas.visits.complete');
 
-        // Penilaian (form, simpan, laporan) — gunakan 1 namespace path saja
+        // Penilaian (form, simpan, laporan)
         Route::get('/pengawas/penilaian/{school}',              [PengawasEvaluationController::class,'create'])->name('pengawas.evaluations.create');
         Route::post('/pengawas/penilaian/{school}',             [PengawasEvaluationController::class,'store'])->name('pengawas.evaluations.store');
         Route::get('/pengawas/penilaian/{school}/laporan',      [PengawasEvaluationController::class,'report'])->name('pengawas.evaluations.report');
@@ -94,11 +92,36 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/users',               [AdminUserController::class, 'store'])->name('admin.users.store');
         Route::delete('/admin/users/{user}',      [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 
+        // Manajemen data pengawas
+        Route::get('/admin/pengawas',                [PengawasController::class, 'index'])->name('admin.pengawas.index');
+        Route::post('/admin/pengawas',               [PengawasController::class, 'store'])->name('admin.pengawas.store');
+        Route::delete('/admin/pengawas/{pengawas}',  [PengawasController::class, 'destroy'])->name('admin.pengawas.destroy');
+
         // Manajemen visitasi
         Route::get('/admin/visitasi',                     [AdminVisitController::class,'index'])->name('admin.visits.index');
         Route::post('/admin/visitasi/{visit}/schedule',   [AdminVisitController::class,'schedule'])->name('admin.visits.schedule');
         Route::post('/admin/visitasi/{visit}/reject',     [AdminVisitController::class,'reject'])->name('admin.visits.reject');
+
+        // Manajemen akun pengawas & sekolah (CRUD akun: tambah, simpan, edit, hapus)
+        Route::get('/admin/accounts', [AdminAccountController::class, 'index'])
+            ->name('admin.accounts.index');
+        Route::post('/admin/accounts', [AdminAccountController::class, 'store'])
+            ->name('admin.accounts.store');
+        Route::get('/admin/accounts/{user}/edit', [AdminAccountController::class, 'edit'])
+            ->name('admin.accounts.edit');
+        Route::put('/admin/accounts/{user}', [AdminAccountController::class, 'update'])
+            ->name('admin.accounts.update');
+        Route::delete('/admin/accounts/{user}', [AdminAccountController::class, 'destroy'])
+            ->name('admin.accounts.destroy');
     });
+
+    Route::middleware('role:admin|pengawas')->group(function () {
+        Route::get('/pengawas/sekolah',                 [SchoolController::class,'index'])->name('pengawas.schools.index');
+        Route::get('/pengawas/sekolah/{school}',        [SchoolController::class,'show'])->name('pengawas.schools.show');
+        Route::post('/pengawas/sekolah/{school}/approve',[VerificationController::class,'approve'])->name('pengawas.schools.approve');
+        Route::post('/pengawas/sekolah/{school}/reject',[VerificationController::class,'reject'])->name('pengawas.schools.reject');
+    });
+
 });
 
 require __DIR__.'/auth.php';
